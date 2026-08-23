@@ -325,8 +325,13 @@ def edit_link(link_id):
 
     if not link:
         abort(404)
+        
+    # FLAW 1: Broken Access Control
+    # The backend does not verify that the authenticated user
+    # is the link owner before allowing the user to edit the link. 
 
-    authentication.require_link_owner(link)
+    # FIX:
+    # authentication.require_link_owner(link)
 
     all_categories = categories.get_all_categories()
 
