@@ -1,3 +1,9 @@
-"""Application configuration for the course project development environment."""
+"""Application configuration."""
 
-SECRET_KEY = "18fd24bf6a2ad4dac04a33963db1c42f"
+import os
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY environment variable is not set. "
+        "See README.md for setup instructions.")
