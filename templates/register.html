@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Registration</h2>
+
+<form action="/register" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <p>
+    <label for="username">Username</label>:<br>
+    <input
+      id="username"
+      type="text"
+      name="username"
+      value="{{ filled.username }}"
+      maxlength="16"
+      required
+    >
+  </p>
+
+  <p>
+    <label for="password1">Password</label>:<br>
+    <input
+      id="password1"
+      type="password"
+      name="password1"
+      maxlength="100"
+      required
+    >
+  </p>
+
+  <p>
+    <label for="password2">Confirm password</label>:<br>
+    <input
+      id="password2"
+      type="password"
+      name="password2"
+      maxlength="100"
+      required
+    >
+  </p>
+
+  <p>
+    <input type="submit" value="Create account">
+  </p>
+</form>
+
+<p>
+  Already have an account?
+  <a href="/login">Sign in</a>
+</p>
+
+{% endblock %}

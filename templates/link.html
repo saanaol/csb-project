@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="link-card">
+  <h2>{{ link.title }}</h2>
+
+  <p class="link-url">
+    <strong>Link:</strong>
+    <a href="{{ link.url }}">{{ link.url }}</a>
+  </p>
+
+  {% if link.category_name %}
+    <p>
+      <strong>Category:</strong> {{ link.category_name }}
+    </p>
+  {% endif %}
+
+  {% if link.notes %}
+    <p class="link-notes">
+      <strong>Notes:</strong> {{ link.notes | show_lines }}
+    </p>
+  {% endif %}
+
+  <p>
+    Added by:
+    <a href="/user/{{ link.user_id }}">{{ link.username }}</a>,
+    {{ link.created_at }}{% if link.updated_at %}, edited {{ link.updated_at }}{% endif %}
+  </p>
+</div>
+
+{% if session.user_id %}
+  <div class="form-section">
+    <h3>Add comment</h3>
+
+    <form action="/add_comment/{{ link.id }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <p>
+        <label for="content">Comment</label>:<br>
+        <textarea
+          id="content"
+          name="content"
+          rows="4"
+          cols="50"
+          maxlength="500"
+          required
+        >{{ filled_comment or "" }}</textarea>
+      </p>
+
+      <p>
+        <input type="submit" value="Add comment">
+      </p>
+    </form>
+  </div>
+{% endif %}
+
+<h3>Comments</h3>
+
+{% if comments %}
+  {% for comment in comments %}
+    <div class="comment-card">
+      <p class="comment-content">
+        {{ comment.content | show_lines }}
+      </p>
+
+      <p>
+        Added by:
+        <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a>,
+        {{ comment.created_at }}
+      </p>
+    </div>
+  {% endfor %}
+
+  {% if page_count > 1 %}
+    <p class="pagination">
+      {% if page > 1 %}
+        <a href="/link/{{ link.id }}?page={{ page - 1 }}">
+          &lt;&lt; Previous
+        </a>
+      {% endif %}
+
+      Page {{ page }}/{{ page_count }}
+
+      {% if page < page_count %}
+        <a href="/link/{{ link.id }}?page={{ page + 1 }}">
+          Next &gt;&gt;
+        </a>
+      {% endif %}
+    </p>
+  {% endif %}
+{% else %}
+  <p>No comments yet.</p>
+{% endif %}
+
+{% if link.user_id == session.user_id %}
+  <div class="actions">
+    <a href="/edit_link/{{ link.id }}">Edit link</a>
+    <a class="danger-link" href="/remove_link/{{ link.id }}">Delete link</a>
+  </div>
+{% endif %}
+
+<p class="back-link">
+  <a href="/links">Back to links</a>
+</p>
+
+{% endblock %}

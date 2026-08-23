@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Edit link</h2>
+
+<form action="/edit_link/{{ link.id }}" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <p>
+    <label for="title">Title</label>:<br>
+    <input
+      id="title"
+      type="text"
+      name="title"
+      value="{{ link.title }}"
+      minlength="3"
+      maxlength="50"
+      required
+    >
+  </p>
+
+  <p>
+    <label for="url">URL</label>:<br>
+    <input
+      id="url"
+      type="text"
+      name="url"
+      value="{{ link.url }}"
+      placeholder="https://example.com"
+      maxlength="300"
+      required
+    >
+  </p>
+
+  <p>
+    <label for="notes">Notes</label>:<br>
+    <textarea
+      id="notes"
+      name="notes"
+      rows="5"
+      cols="50"
+      maxlength="1000"
+    >{{ link.notes or "" }}</textarea>
+  </p>
+
+  <p>
+    <label for="category_id">Category</label>:<br>
+    <select id="category_id" name="category_id">
+      <option value="">No category</option>
+
+      {% for category in categories %}
+        <option
+          value="{{ category.id }}"
+          {% if category.id|string == selected_category_id|string %}selected{% endif %}
+        >
+          {{ category.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </p>
+
+  <p>
+    <input type="submit" value="Save changes">
+  </p>
+</form>
+
+<p class="back-link">
+  <a href="/link/{{ link.id }}">Back to link</a>
+</p>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Links</h2>
+
+<p class="actions">
+  <a class="button-link" href="/links/new">Add new link</a>
+</p>
+
+<div class="form-section">
+  <form action="/search_links" method="get">
+    <p>
+      <label for="query">Search links</label>:<br />
+      <input
+        id="query"
+        type="text"
+        name="query"
+        maxlength="50"
+        placeholder="Search for a link..."
+        value="{{ query or '' }}"
+        required
+      >
+    </p>
+
+    <p>
+      <input type="submit" value="Search">
+    </p>
+  </form>
+</div>
+
+{% if search_performed %}
+  <p class="info">
+    Search results for: <strong>{{ query }}</strong>
+  </p>
+
+  <p class="actions">
+    <a href="/links">Show all links</a>
+  </p>
+{% endif %}
+
+{% if links and links|length > 0 %}
+
+  {% if search_performed %}
+    <h3>Links which matched the search:</h3>
+  {% else %}
+    <h3>All links:</h3>
+  {% endif %}
+
+  {% for link in links %}
+    <div class="link-card">
+      <h3>
+        <a href="/link/{{ link.id }}">{{ link.title }}</a>
+      </h3>
+
+      <p>
+        Added by:
+        <a href="/user/{{ link.user_id }}">{{ link.username }}</a>
+      </p>
+
+      {% if link.category_name %}
+        <p>
+          Category: {{ link.category_name }}
+        </p>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  {% if page_count > 1 %}
+    <p class="pagination">
+      {% if page > 1 %}
+        {% if search_performed %}
+          <a href="/search_links?query={{ query | urlencode }}&page={{ page - 1 }}">
+            &lt;&lt; Previous
+          </a>
+        {% else %}
+          <a href="/links/{{ page - 1 }}">&lt;&lt; Previous</a>
+        {% endif %}
+      {% endif %}
+
+      Page {{ page }}/{{ page_count }}
+
+      {% if page < page_count %}
+        {% if search_performed %}
+          <a href="/search_links?query={{ query | urlencode }}&page={{ page + 1 }}">
+            Next &gt;&gt;
+          </a>
+        {% else %}
+          <a href="/links/{{ page + 1 }}">Next &gt;&gt;</a>
+        {% endif %}
+      {% endif %}
+    </p>
+  {% endif %}
+
+{% else %}
+
+  {% if search_performed %}
+    <h3>No link was found matching your search.</h3>
+  {% else %}
+    <h3>No links have been added yet.</h3>
+  {% endif %}
+
+{% endif %}
+
+{% endblock %}

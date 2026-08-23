@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Link Manager</title>
+  <link rel="stylesheet" href="/static/main.css">
+</head>
+
+<body>
+  <div class="header">
+    <h1>Link Manager</h1>
+  </div>
+
+  <div class="nav">
+    <nav>
+      <ul>
+        {% if session.username %}
+          <li>
+            Signed in as
+            <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
+          </li>
+          <li>
+            <a href="/links">Links</a>
+          </li>
+          <li>
+            <a href="/user/{{ session.user_id }}">My profile</a>
+          </li>
+          <li>
+            <form action="/logout" method="post" class="nav-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="submit" value="Sign out">
+            </form>
+          </li>
+        {% else %}
+          <li>
+            <a href="/login">Sign in</a>
+          </li>
+          <li>
+            <a href="/register">Register</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="content">
+    {% for message in get_flashed_messages() %}
+      <p class="info">
+        {{ message }}
+      </p>
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+  </div>
+</body>
+
+</html>

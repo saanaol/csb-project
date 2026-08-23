@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>User: {{ user.username }}</h2>
+
+<h3>Activity stats</h3>
+
+<ul>
+  <li>Links added: {{ link_count }}</li>
+  <li>Comments added: {{ comment_count }}</li>
+</ul>
+
+<h3>Links added by {{ user.username }}</h3>
+
+{% if user_links %}
+  <ul>
+    {% for link in user_links %}
+      <li>
+        <a href="/link/{{ link.id }}">{{ link.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% if page_count > 1 %}
+    <p class="pagination">
+      {% if page > 1 %}
+        <a href="/user/{{ user_id }}?page={{ page - 1 }}">
+          &lt;&lt; Previous
+        </a>
+      {% endif %}
+
+      Page {{ page }}/{{ page_count }}
+
+      {% if page < page_count %}
+        <a href="/user/{{ user_id }}?page={{ page + 1 }}">
+          Next &gt;&gt;
+        </a>
+      {% endif %}
+    </p>
+  {% endif %}
+{% else %}
+  <p>This user has not added any links yet.</p>
+{% endif %}
+
+<p class="back-link">
+  <a href="/links">Back to links</a>
+</p>
+
+{% endblock %}
