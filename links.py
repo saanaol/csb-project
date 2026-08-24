@@ -59,53 +59,85 @@ def remove_link(link_id):
 
 
 def count_search_links(query):
-    sql = """
+
+	# FLAW 3: Injection
+    # User's input is inserted directly into the SQL query.
+    
+    sql = f"""
         SELECT COUNT(*) AS count
         FROM links l
         LEFT JOIN categories c ON l.category_id = c.id
-        WHERE l.title LIKE ? OR
-              l.url LIKE ? OR
-              l.notes LIKE ? OR
-              c.name LIKE ?
+        WHERE l.title LIKE '%{query}%' OR l.url LIKE '%{query}%' OR l.notes LIKE '%{query}%' OR c.name LIKE '%{query}%'
     """
-    pattern = "%" + query + "%"
-
-    return db.query(sql, [
-        pattern,
-        pattern,
-        pattern,
-        pattern
-    ])[0]["count"]
-
+    return db.query(sql)[0]["count"]
+    
+    # FIX:
+    # sql = """
+    #     SELECT COUNT(*) AS count
+    #     FROM links l
+    #     LEFT JOIN categories c ON l.category_id = c.id
+    #     WHERE l.title LIKE ? OR
+    #           l.url LIKE ? OR
+    #           l.notes LIKE ? OR
+    #           c.name LIKE ?
+    # """
+    # pattern = "%" + query + "%"
+    # return db.query(sql, [
+    #     pattern,
+    #     pattern,
+    #     pattern,
+    #     pattern
+    # ])[0]["count"]
+    
 
 def search_links(query, page, page_size):
-    sql = """
-        SELECT l.id, l.title, l.url, l.user_id, l.category_id,
-               u.username, c.name category_name
-        FROM links l
-        JOIN users u ON l.user_id = u.id
-        LEFT JOIN categories c ON l.category_id = c.id
-        WHERE l.title LIKE ? OR
-              l.url LIKE ? OR
-              l.notes LIKE ? OR
-              c.name LIKE ?
-        ORDER BY l.id DESC
-        LIMIT ? OFFSET ?
-    """
-    pattern = "%" + query + "%"
     limit = page_size
     offset = page_size * (page - 1)
 
-    return db.query(sql, [
-        pattern,
-        pattern,
-        pattern,
-        pattern,
-        limit,
-        offset
-    ])
+    # FLAW 3: Injection
+    # User's input is inserted directly into the SQL query.
+    
+    sql = f"""
+        SELECT l.id, l.title, l.url, l.user_id, l.category_id, u.username, c.name category_name
+        FROM links l
+        JOIN users u ON l.user_id = u.id
+        LEFT JOIN categories c ON l.category_id = c.id
+        WHERE l.title LIKE '%{query}%'
+           OR l.url LIKE '%{query}%'
+           OR l.notes LIKE '%{query}%'
+           OR c.name LIKE '%{query}%'
+        ORDER BY l.id DESC
+        LIMIT ? OFFSET ?
+    """
+    return db.query(sql, [limit, offset])
 
-
+    # FIX:
+    # sql = """
+    #     SELECT l.id, l.title, l.url, l.user_id, l.category_id,
+    #            u.username, c.name category_name
+    #     FROM links l
+    #     JOIN users u ON l.user_id = u.id
+    #     LEFT JOIN categories c ON l.category_id = c.id
+    #     WHERE l.title LIKE ?
+    #        OR l.url LIKE ?
+    #        OR l.notes LIKE ?
+    #        OR c.name LIKE ?
+    #     ORDER BY l.id DESC
+    #     LIMIT ? OFFSET ?
+    # """
+    #
+    # pattern = "%" + query + "%"
+    #
+    # return db.query(sql, [
+    #     pattern,
+    #     pattern,
+    #     pattern,
+    #     pattern,
+    #     limit,
+    #     offset
+    # ])
+    
+    
 def get_user_links(user_id, page, page_size):
     sql = """
         SELECT l.id, l.title, l.url, l.category_id,
