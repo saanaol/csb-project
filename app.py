@@ -3,7 +3,7 @@
 import markupsafe
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
-
+import hashlib
 import authentication
 import categories
 import comments
@@ -140,7 +140,12 @@ def register():
         flash("Username is already taken")
         return render_template("register.html", filled=filled)
 
-    password_hash = generate_password_hash(password1)
+    # FLAW 2: Cryptographic Failures
+    # Passwords are hashed using an unsalted SHA-256 hash.
+    password_hash = hashlib.sha256(password1.encode()).hexdigest()
+
+    # FIX:
+    # password_hash = generate_password_hash(password1)
 
     if not users.add_user(username, password_hash):
         flash("Username is already taken")
@@ -168,9 +173,18 @@ def login():
         flash("Invalid username or password")
         return render_template("login.html", filled=filled)
 
-    if check_password_hash(user["password_hash"], password):
+    # FLAW 2: Cryptographic Failures
+    # The submitted password is hashed with unsalted SHA-256 and compared with the hash stored in the database.
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+    if user["password_hash"] == password_hash:
         authentication.login_user(user)
         return redirect("/links")
+
+    # FIX:
+    # if check_password_hash(user["password_hash"], password):
+    #     authentication.login_user(user)
+    #     return redirect("/links")
 
     flash("Invalid username or password")
     return render_template("login.html", filled=filled)
