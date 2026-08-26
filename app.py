@@ -170,6 +170,12 @@ def login():
     user = users.get_user_by_username(username)
 
     if not user:
+        # FLAW 5: Security Logging and Monitoring Failures
+        # Failed login attempts are not logged as auditable events.
+
+        # FIX:
+        # app.logger.warning("Failed login attempt for username=%r", username)
+
         flash("Invalid username or password")
         return render_template("login.html", filled=filled)
 
@@ -180,11 +186,17 @@ def login():
     if user["password_hash"] == password_hash:
         authentication.login_user(user)
         return redirect("/links")
-
+        
     # FIX:
     # if check_password_hash(user["password_hash"], password):
     #     authentication.login_user(user)
     #     return redirect("/links")
+
+    # FLAW 5: Security Logging and Monitoring Failures
+    # Failed login attempts are not logged as auditable events.
+
+    # FIX:
+    # app.logger.warning("Failed login attempt for username=%r", username)
 
     flash("Invalid username or password")
     return render_template("login.html", filled=filled)
