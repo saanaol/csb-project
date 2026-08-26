@@ -5,7 +5,7 @@ import re
 
 USERNAME_MIN_LENGTH = 2
 USERNAME_MAX_LENGTH = 16
-PASSWORD_MIN_LENGTH = 8
+PASSWORD_MIN_LENGTH = 15
 TITLE_MIN_LETTERS = 3
 TITLE_MAX_LENGTH = 50
 SEARCH_QUERY_MAX_LENGTH = TITLE_MAX_LENGTH
@@ -39,8 +39,12 @@ def validate_password(password):
     if not password:
         return "Password cannot be empty"
 
-    if len(password) < PASSWORD_MIN_LENGTH:
-        return "Password must be at least 8 characters long"
+    # FLAW 4: Identification and Authentication Failures
+    # The application permits weak passwords since only non-emptiness is required for an accepted password.
+
+    # FIX:
+    # if len(password) < PASSWORD_MIN_LENGTH:
+    #     return "Password must be at least 15 characters long"
 
     return None
 
