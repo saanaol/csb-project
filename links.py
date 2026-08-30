@@ -71,7 +71,7 @@ def count_search_links(query):
     """
     return db.query(sql)[0]["count"]
     
-    # FIX:
+    # FIX: Replace the vulnerable query code above with the following parameterised query code
     # sql = """
     #     SELECT COUNT(*) AS count
     #     FROM links l
@@ -111,7 +111,7 @@ def search_links(query, page, page_size):
     """
     return db.query(sql, [limit, offset])
 
-    # FIX:
+    # FIX: Replace the vulnerable query code above with the following parameterised query code
     # sql = """
     #     SELECT l.id, l.title, l.url, l.user_id, l.category_id,
     #            u.username, c.name category_name

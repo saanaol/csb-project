@@ -144,7 +144,7 @@ def register():
     # Passwords are hashed using an unsalted SHA-256 hash.
     password_hash = hashlib.sha256(password1.encode()).hexdigest()
 
-    # FIX:
+    # FIX: Replace the vulnerable SHA-256 password handling code above with the following code
     # password_hash = generate_password_hash(password1)
 
     if not users.add_user(username, password_hash):
@@ -187,7 +187,7 @@ def login():
         authentication.login_user(user)
         return redirect("/links")
         
-    # FIX:
+    # FIX: Replace the vulnerable SHA-256 password handling code above with the following code 
     # if check_password_hash(user["password_hash"], password):
     #     authentication.login_user(user)
     #     return redirect("/links")
